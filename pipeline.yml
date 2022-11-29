@@ -1,0 +1,47 @@
+trigger:
+  - main
+
+pool: demo
+
+stages:
+- stage: validationdev
+  jobs:
+  - job: docker_validation_dev
+    steps:
+    - task: Docker@2
+      displayName: Docker Build 
+      inputs:
+        containerRegistry: 'docker credentials'
+        repository: 'starseed7777/arcana'
+        command: 'build'
+        Dockerfile: 'Dockerfile'
+        tags: '$(Build.BuildNumber)-DEV'
+        
+    - task: Docker@2
+      displayName: Docker Push
+      inputs:
+        containerRegistry: 'docker credentials'
+        repository: 'starseed7777/arcana'
+        command: 'push'
+        tags: '$(Build.BuildNumber)-DEV'
+- stage: validationqa
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  jobs:
+  - job: docker_validation_qa
+    steps:
+    - task: Docker@2
+      displayName: Docker Build 
+      inputs:
+        containerRegistry: 'docker credentials'
+        repository: 'starseed7777/arcana'
+        command: 'build'
+        Dockerfile: 'Dockerfile'
+        tags: '$(Build.BuildNumber)-QA'
+        
+    - task: Docker@2
+      displayName: Docker Push
+      inputs:
+        containerRegistry: 'docker credentials'
+        repository: 'starseed7777/arcana'
+        command: 'push'
+        tags: '$(Build.BuildNumber)-QA'
