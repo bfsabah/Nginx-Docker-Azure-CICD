@@ -44,7 +44,9 @@ PaaS services on the cloud such as - (azure app service) .
 
 The Scenario: We will use Nginx server to host Arcana(html5) web app and emulete it to a docker container and push it to a container registery (docker hub). We need Nginx installed to our machine and we need the code that builds our image (dockerfile)
 1- We install Docker to our Local Machine https://www.docker.com/products/docker-desktop/
+
 2- DockerDesktop we pull Nginx image to our local : - docker pull nginx
+
 3- We create a container with using docker desktop (or you can use given commands below) https://thispointer.com/how-to-create-run-a-docker-container-from-an-image/
     && docker images
     && docker ps
@@ -53,7 +55,9 @@ The Scenario: We will use Nginx server to host Arcana(html5) web app and emulete
     && docker rm / rmi
     && docker build -t my-app:1.0 . {build an image named my-app tag:1.0 "." for adding all files}
     && docker exec -it {docker-id} /bin/sh {or /bin/bash} : get in the container/vm
+
 4- We clone Arcana from https://github.com/zce/html5up repo to our local machine.
+
 5- In Arcana folder we create a Dockerfile
     && FROM nginx:latest                          #we will edit this running Nginx image
     && WORKDIR /app                               #we specify our working dir in container
@@ -63,26 +67,46 @@ The Scenario: We will use Nginx server to host Arcana(html5) web app and emulete
     && COPY . /usr/share/nginx/html               #We copy all other objects(banners, CSS, javascriptfiles etc)
     && RUN service nginx restart
     && ENTRYPOINT ["nginx", "-g", "daemon off;"]  #run ngnix server background
+
 6- Build the image : && docker build -t arcana:dev .
+
 7- Goto DockeGunb and create a repo(that repo creates push image code)
+
 8- Login docker via terminal in local : & docker login {enter credentials)
+
 9- Add a tag to your image && docker tag {image ID/name} dhemir/arcana:lts
+
 10- Push your tagged image && docker push dhemir/arcana:lts
 
 The Scenario-2: We will setup in AzureDevOps a Pipeline that automates this creating Arcana container.
+
 1- Create a new repo in Azure : Arcana and clone it to our local
+
 2- Copy all Arcana files to this local folder.
+
 3- Push all these files to repo in main branch.
+
 4- Create(or run) your AgentVM in AzurePortal && cd myagent && ./run.sh {run the agent)
+
 5- Check your Agent from the list ProjectSettings > AgentPools {demo agent running}
+
 6- Goto VsCode and create a new branch && git checkout -b features/pipeline
+
 7- in Features branch create a new file .azuredevops/pipeline.yml and push to AzureRepo.
 https://github.com/bfsabah/Nginx-Docker-Azure-CICD/blob/6442e201a587be786e5700f9220362fa28e0dc27/pipeline.yml#L1-L47
+
 8- AzureDevOps > Create a new PipeLine >select Azure Repos >select Arcana Repo >select Existing Azure Pipelines YAML file.
+
 9- pipeline.yml file automatically appears in screen. You can edit, save and RUN pipeline from here.
+
 10- You can use build agent to edit your pipeline.yml
+
 11- Goto AgentVm and install Docker in it. (do not forget to add user to dockergroup in AgentVM)
+
 12- Come back to Pipeline, we have to fill Container Registry ( ProjectSettings > Service Connections> CreateNew > DockerHub
+
 13: https://index.docker.io/v1/ - DockerUsername - DockerPassword - docker credentials
+
 14- Come back to Pipelines and fill the Container Credentials.
+
 15- As tags we use : $(Build.BuildId) for Automatically create Semantic Versioning.
